@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Word Counter Tool</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #4a90e2;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      text-align: center;
+      color: #444;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #ff9800;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 35px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 850px;
+      width: 90%;
+      margin: 0 auto 50px;
+      text-align: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 280px;
+      padding: 18px;
+      font-size: 18px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      resize: none;
+      margin-bottom: 25px;
+      box-sizing: border-box;
+    }
+
+    textarea:focus {
+      border-color: #74ebd5;
+      outline: none;
+      box-shadow: 0 0 10px rgba(116, 235, 213, 0.4);
+    }
+
+    .results {
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .results p {
+      background: #f1f1f1;
+      margin: 10px 0;
+      padding: 12px 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #74ebd5;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #55d4a2;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .description {
+        font-size: 1rem;
+      }
+
+      .container {
+        padding: 25px 20px;
+      }
+
+      textarea {
+        height: 220px;
+        font-size: 16px;
+      }
+
+      .results p {
+        font-size: 1rem;
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📘 Word Counter Tool</h1>
+  <div class="description">
+    A smart tool made for <span class="highlight">users like you</span> to analyze your text instantly.<br/>
+    It gives you the <span class="highlight">word</span>, <span class="highlight">character</span>, <span class="highlight">space</span>,
+    <span class="highlight">number</span> and <span class="highlight">special character</span> counts—plus an estimated reading time!
+  </div>
+
+  <div class="container">
+    <textarea id="text-input" placeholder="Start typing or paste your content here..."></textarea>
+
+    <div class="results">
+      <p><strong>Word Count:</strong> <span id="word-count">0</span></p>
+      <p><strong>Character Count:</strong> <span id="char-count">0</span></p>
+      <p><strong>Space Count:</strong> <span id="space-count">0</span></p>
+      <p><strong>Special Character Count:</strong> <span id="special-char-count">0</span></p>
+      <p><strong>Number Count:</strong> <span id="number-count">0</span></p>
+      <p><strong>Reading Time:</strong> <span id="reading-time">0</span> minute(s)</p>
+    </div>
+
+    <div class="buttons">
+      <button id="copy-btn">Copy</button>
+      <button id="paste-btn">Paste</button>
+    </div>
+  </div>
+
+  <script>
+    const textInput = document.getElementById('text-input');
+    const wordCountDisplay = document.getElementById('word-count');
+    const charCountDisplay = document.getElementById('char-count');
+    const spaceCountDisplay = document.getElementById('space-count');
+    const specialCharCountDisplay = document.getElementById('special-char-count');
+    const numberCountDisplay = document.getElementById('number-count');
+    const readingTimeDisplay = document.getElementById('reading-time');
+
+    function updateCounts() {
+      const text = textInput.value;
+
+      // Word count
+      const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+
+      // Character count
+      const charCount = text.length;
+
+      // Space count
+      const spaceCount = (text.match(/ /g) || []).length;
+
+      // Special character count
+      const specialCharCount = (text.match(/[^a-zA-Z0-9\s]/g) || []).length;
+
+      // Number count
+      const numberCount = (text.match(/\d+/g) || []).length;
+
+      // Reading time
+      const readingTime = Math.ceil(wordCount / 200);
+
+      wordCountDisplay.textContent = wordCount;
+      charCountDisplay.textContent = charCount;
+      spaceCountDisplay.textContent = spaceCount;
+      specialCharCountDisplay.textContent = specialCharCount;
+      numberCountDisplay.textContent = numberCount;
+      readingTimeDisplay.textContent = readingTime < 1 ? 'Less than 1' : readingTime;
+    }
+
+    textInput.addEventListener('input', updateCounts);
+    updateCounts();
+
+    document.getElementById('copy-btn').addEventListener('click', function() {
+      textInput.select();
+      document.execCommand('copy');
+      alert("Text copied to clipboard!");
+    });
+
+    document.getElementById('paste-btn').addEventListener('click', function() {
+      navigator.clipboard.readText().then(function(text) {
+        textInput.value = text;
+        updateCounts();
+      }).catch(function(err) {
+        console.error("Failed to read clipboard contents: ", err);
+      });
+    });
+  </script>
+
+</body>
+</html>
